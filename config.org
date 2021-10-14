@@ -135,7 +135,7 @@ General.el allows us to set keybindings.  As a longtime Doom Emacs user, I have 
 #+end_src
 
 * STARTUP PERFORMANCE
-  This section is where it make emacs faster to load.
+  This section is for configuration to optimize the performance of emacs.
 ** Garbage collection
 Makes startup faster by reducing the frequency of garbage collection
 #+begin_src emacs-lisp
