@@ -68,6 +68,7 @@
   - [[#vterm][Vterm]]
 - [[#splits-and-window-controls][SPLITS AND WINDOW CONTROLS]]
 - [[#theme][THEME]]
+- [[#telegram---telga][Telegram - Telga]]
 - [[#which-key][WHICH KEY]]
 - [[#runtime-performance][RUNTIME PERFORMANCE]]
 - [[#writeroom-mode][WRITEROOM MODE]]
@@ -83,7 +84,7 @@ I don't want to use init.el to config Emacs.  I want to use an org file to confi
 #+end_example
 
 * ABOUT THIS CONFIG 
-This is my personal Emacs config.  I patterned my config to mimic Doom Emacs, which is a distribution of Emacs that uses the "evil" keybindings (Vim keybindings) and includes a number of nice extensions and a bit of configuration out of the box.
+This is my personal Emacs config.  I patterned my config to mimic Doom Emacs, which is a distribution of Emacs that uses the "evil" keybindings (Vim keybindings) and includes a number of nice extensions and a bit of configuration out of the box.  I am maintaining this config not just for myself, but also for those that want to explore some of what is possible with Emacs.  I will add a lot of examples of plugins and settings, some of them I may not even use personally.  I do this because many people following me on YouTube and Odysee look at my configs as "documentation".
 
 * A FEW PROGRAMS TO LOAD FIRST
 The order in which the various Emacs modules load is very important.  So the very first code block is going to contain essential modules that many other modules will depend on later in this config.
@@ -92,7 +93,8 @@ The order in which the various Emacs modules load is very important.  So the ver
 #+begin_src emacs-lisp
 (require 'package)
 (add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
+             '("melpa" . "https://melpa.org/packages/")
+             '("elpy" . "http://jorgenshaefer.github.io/packages/"))
 (package-refresh-contents)
 (package-initialize)
 #+end_src
@@ -135,7 +137,7 @@ General.el allows us to set keybindings.  As a longtime Doom Emacs user, I have 
 #+end_src
 
 * STARTUP PERFORMANCE
-  This section is for configuration to optimize the performance of emacs.
+  This section is where it make emacs faster to load.
 ** Garbage collection
 Makes startup faster by reducing the frequency of garbage collection
 #+begin_src emacs-lisp
@@ -905,6 +907,16 @@ We need a nice colorscheme.  The Doom Emacs guys have a nice collection of theme
 (load-theme 'doom-challenger-deep t)
 #+end_src
 
+* Telegram - Telga
+This is to install Telga, a Telegram client for Emacs.
+#+begin_src emacs-lisp
+(use-package telega)
+;This is to enable notifications in the d-bus
+(telega-notifications-mode 1)
+(add-hook 'telega-load-hook 'telega-notifications-mode)
+;this is to enable a global minor mode to display telega status in the modeline.
+(add-hook 'telega-load-hook 'telega-mode-line-mode)
+#+end_src
 * WHICH KEY
 Which-key is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
 
