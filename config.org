@@ -10,13 +10,13 @@
 - [[#important-put-this-in-your-initel][IMPORTANT! PUT THIS IN YOUR INIT.EL]]
 - [[#about-this-config][ABOUT THIS CONFIG]]
 - [[#a-few-programs-to-load-first][A FEW PROGRAMS TO LOAD FIRST]]
-  - [[#setup-packageel-to-work-with-melpa][Setup Package.el To Work With MELPA]]
+  - [[#setup-packageel-to-work-with-melpa-and-elpy][Setup Package.el To Work With MELPA and ELPY]]
   - [[#use-package][Use-Package]]
   - [[#evil-mode][Evil Mode]]
   - [[#general-keybindings][General Keybindings]]
 - [[#startup-performance][STARTUP PERFORMANCE]]
   - [[#garbage-collection][Garbage collection]]
-  - [[#native-compil][Native Compil]]
+  - [[#native-compile][Native Compile]]
 - [[#all-the-icons][ALL THE ICONS]]
 - [[#buffers-and-bookmarks][BUFFERS AND BOOKMARKS]]
 - [[#dashboard][DASHBOARD]]
@@ -36,7 +36,6 @@
   - [[#useful-file-functions][Useful File Functions]]
 - [[#fonts][FONTS]]
   - [[#setting-the-font-face][Setting The Font Face]]
-  - [[#zooming-in-and-out][Zooming In and Out]]
 - [[#general-keybindings-1][GENERAL KEYBINDINGS]]
 - [[#graphical-user-interface-tweaks][GRAPHICAL USER INTERFACE TWEAKS]]
   - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars and Scrollbars]]
@@ -66,8 +65,11 @@
 - [[#shells][SHELLS]]
   - [[#eshell][Eshell]]
   - [[#vterm][Vterm]]
+- [[#ide-setup][IDE SETUP]]
+  - [[#python][Python]]
 - [[#splits-and-window-controls][SPLITS AND WINDOW CONTROLS]]
 - [[#theme][THEME]]
+- [[#straightel][STRAIGHT.EL]]
 - [[#telegram---telga][Telegram - Telga]]
 - [[#which-key][WHICH KEY]]
 - [[#runtime-performance][RUNTIME PERFORMANCE]]
@@ -89,7 +91,7 @@ This is my personal Emacs config.  I patterned my config to mimic Doom Emacs, wh
 * A FEW PROGRAMS TO LOAD FIRST
 The order in which the various Emacs modules load is very important.  So the very first code block is going to contain essential modules that many other modules will depend on later in this config.
 
-** Setup Package.el To Work With MELPA
+** Setup Package.el To Work With MELPA and ELPY
 #+begin_src emacs-lisp
 (require 'package)
 (add-to-list 'package-archives
@@ -160,7 +162,7 @@ Makes startup faster by reducing the frequency of garbage collection
 
 ;; Silence compiler warnings as they can be pretty disruptive (setq comp-async-report-warnings-errors nil)
 #+end_src
-** Native Compil
+** Native Compile
 #+begin_src emacs-lisp
 ;; Silence compiler warnings as they can be pretty disruptive
 (if (boundp 'comp-deferred-compilation)
@@ -437,7 +439,7 @@ Defining our fonts.  Right now I'm using Source Code Pro (SauceCodePro) from the
 (setq global-prettify-symbols-mode t)
 #+end_src
 
-** Zooming In and Out
+
 You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTRL plus the mouse wheel for zooming in/out.
 
 #+begin_src emacs-lisp
@@ -836,7 +838,7 @@ Emacs' default scrolling is annoying because of the sudden half-page jumps.  Als
 #+end_src
 
 * SHELLS
-In my configs, all of my shells (bash, fish, zsh and the ESHELL) require my shell-color-scripts-git package to be installed.  On Arch Linux, you can install it from the AUR.  Otherwise, go to my shell-color-scripts repository on GitLab to get it.
+In my configs, all of my shells (bash, fish, zsh and the ESHELL) require my shel-color-scripts-git package to be installed.  On Arch Linux, you can install it from the AUR.  Otherwise, go to my shell-color-scripts repository on GitLab to get it.
 
 ** Eshell
 Eshell is an Emacs 'shell' that is written in Elisp.
@@ -876,6 +878,15 @@ Vterm is a terminal emulator within Emacs.  The 'shell-file-name' setting sets t
       vterm-max-scrollback 5000)
 #+end_src
 
+* IDE SETUP
+Lets turn emacs into a powerful IDE!
+
+** Python
+
+#+begin_src emacs-lisp
+(use-package better-defaults)
+#+end_src
+
 * SPLITS AND WINDOW CONTROLS
 
 #+begin_src emacs-lisp
@@ -898,8 +909,7 @@ Vterm is a terminal emulator within Emacs.  The 'shell-file-name' setting sets t
 #+end_src
 
 * THEME
-We need a nice colorscheme.  The Doom Emacs guys have a nice collection of themes, so let's install them!
-
+We need a nice colorscheme.
 #+begin_src emacs-lisp
 (use-package doom-themes)
 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
@@ -907,16 +917,70 @@ We need a nice colorscheme.  The Doom Emacs guys have a nice collection of theme
 (load-theme 'doom-challenger-deep t)
 #+end_src
 
+* STRAIGHT.EL
+
+#+begin_src emacs-lisp
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+#+end_src
+
 * Telegram - Telga
 This is to install Telga, a Telegram client for Emacs.
+
 #+begin_src emacs-lisp
-(use-package telega)
-;This is to enable notifications in the d-bus
-(telega-notifications-mode 1)
-(add-hook 'telega-load-hook 'telega-notifications-mode)
-;this is to enable a global minor mode to display telega status in the modeline.
-(add-hook 'telega-load-hook 'telega-mode-line-mode)
+(use-package telega
+    :straight (telega :type git :host github :repo "zevlg/telega.el")
+    :commands telega
+    ;; :hook (telega-load . (lambda ()
+    ;; 			 (interactive)
+    ;; 			 (require 'ol-telega)))
+    :bind
+    (:map telega-root-mode-map
+     ("A" . telega-account-switch))
+    :custom
+    (telega-use-docker nil)
+    (telega-old-date-format "20%Y.0%M.%D")
+    (telega-chat-input-markups '("org" nil "markdown1" "markdown2"))
+    ;(telega-use-tracking-for '(any pin unread))
+    ;(telega-emoji-use-images t)
+    (telega-completing-read-function #'completing-read)
+    (telega-msg-rainbow-title t)
+    (telega-chat-fill-column 75)
+    (telega-debug nil)
+    (telega-appindicator-labels '("❶" "❷" "❸" "❹" "❺" "❻" "❼" "❽" "❾" "❿" "⓫" "⓬" "⓭" "⓮" "⓯" "⓰" "⓱" "⓲" "⓳" "⓴"))
+    (telega-accounts `(("writh" telega-database-dir ,(concat telega-database-dir "/writh"))
+                       )))
+    :config
+    ;(setq telega-user-use-avatars nil)
+    (telega-appindicator-mode t)
+    (telega-notifications-mode t)
+    (add-hook 'telega-root-mode-hook (lambda () (toggle-truncate-lines 1)))
+(setq telega-emoji-company-backend 'telega-company-emoji)
+
+(defun my-telega-chat-mode ()
+  (set (make-local-variable 'company-backends)
+       (append (list telega-emoji-company-backend
+                   'telega-company-username
+                   'telega-company-hashtag)
+             (when (telega-chat-bot-p telega-chatbuf--chat)
+               '(telega-company-botcmd))))
+  (company-mode 1))
+
+(add-hook 'telega-chat-mode-hook 'my-telega-chat-mode)
+(add-hook 'after-init-hook 'global-company-mode)
+
 #+end_src
+
 * WHICH KEY
 Which-key is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
 
